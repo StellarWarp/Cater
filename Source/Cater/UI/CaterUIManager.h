@@ -32,7 +32,7 @@ protected:
 	UCaterGameInstance* GI;
 
 	UPROPERTY()
-	ECaterUIState CurrentUIState;
+	ECaterUIState CurrentUIState = ECaterUIState::NoMenu;
 
 	UPROPERTY()
 	UCaterMainMenuWidget* MainMenuUI;

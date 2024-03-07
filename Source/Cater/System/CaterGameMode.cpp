@@ -92,15 +92,7 @@ void ACaterGameMode::OnPlayerFallen(ACaterCharacter* FallenPlayer)
 	auto GS = GetGameState<ACaterGameState>();
 	GS->bIsGameFinished = true;
 	GS->GameEnding = ECaterGameEnding::PlayerFallen;
-	//call each player controller to show the end match menu
-	for (auto Player : GS->PlayerArray)
-	{
-		auto PC = Cast<ACaterPlayerController>(Player->GetPawn()->GetController());
-		if (PC)
-		{
-			PC->ClientOnGameFinished();
-		}
-	}
+	GS->OnGameFinished();
 }
 
 void ACaterGameMode::OnPlayerRespawn(ACaterCharacter* RespawnedPlayer)
@@ -116,15 +108,8 @@ void ACaterGameMode::OnPlayerEnterFinishZone(ACaterCharacter* Player)
 		UE_LOG(LogTemp, Warning, TEXT("All players finished"));
 		GS->bIsGameFinished = true;
 		GS->GameEnding = ECaterGameEnding::PlayerFinished;
-		// EndMatch();
-		for (auto FinPlayer : GS->FinishedPlayers)
-		{
-			auto PC = Cast<ACaterPlayerController>(FinPlayer->GetController());
-			if (PC)
-			{
-				PC->ClientOnGameFinished();
-			}
-		}
+		GS->OnGameFinished();
+
 	}
 }
 

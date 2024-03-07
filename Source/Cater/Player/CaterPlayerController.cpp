@@ -49,13 +49,6 @@ void ACaterPlayerController::ClientSendRoundEndEvent(bool bCond, int32 ElapsedTi
 {
 }
 
-void ACaterPlayerController::ClientOnGameFinished_Implementation()
-{
-	auto GS = Cast<ACaterGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	GS->ClientOnGameFinished();
-}
-
-
 void ACaterPlayerController::ClientGameStarted_Implementation()
 {
 	bAllowGameActions = true;
@@ -286,8 +279,14 @@ void ACaterPlayerController::SetNewMoveDestination(const FVector DestLocation)
 void ACaterPlayerController::MoveToDestination()
 {
 	check(bMoving);
-	FVector Direction = (Destination - GetPawn()->GetActorLocation()).GetSafeNormal();
-	GetPawn()->AddMovementInput(Direction, 1.0f);
+	const auto PawnPtr = GetPawn();
+	if(!IsValid(PawnPtr))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Pawn is not valid"));
+		return;
+	}
+	FVector Direction = (Destination - PawnPtr->GetActorLocation()).GetUnsafeNormal();
+	PawnPtr->AddMovementInput(Direction, 1.0f);
 	if (FVector::Dist(Destination, GetPawn()->GetActorLocation()) < 120.0f)
 	{
 		bMoving = false;

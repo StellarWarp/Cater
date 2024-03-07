@@ -57,9 +57,6 @@ public:
 
 	void ClientSendRoundEndEvent(bool bCond, int32 ElapsedTime);
 
-	UFUNCTION(reliable, client)
-	void ClientOnGameFinished();
-
 	/// UI
 protected:
 	UPROPERTY()

@@ -133,23 +133,23 @@ FGameInstancePIEResult UCaterGameInstance::StartPlayInEditorGameInstance(
 
 	// UGameplayStatics::OpenLevel(PlayWorld, TEXT("MainMenu"), true, TEXT("listen"));
 
-	GotoState(CaterGameInstanceState::MainMenu);
+	// GotoState(CaterGameInstanceState::MainMenu);
 
 
-	// FString CurrentMapName = PlayWorld->GetOutermost()->GetName();
-	// if (!PlayWorldContext->PIEPrefix.IsEmpty())
-	// {
-	// 	CurrentMapName.ReplaceInline(*PlayWorldContext->PIEPrefix, TEXT(""));
-	// }
-	//
-	// if (CurrentMapName == MainMenuMap || CurrentMapName == FString(TEXT("None")))
-	// {
-	// 	GotoState(CaterGameInstanceState::MainMenu);
-	// }
-	// else
-	// {
-	// 	GotoState(CaterGameInstanceState::Playing);
-	// }
+	FString CurrentMapName = PlayWorld->GetOutermost()->GetName();
+	if (!PlayWorldContext->PIEPrefix.IsEmpty())
+	{
+		CurrentMapName.ReplaceInline(*PlayWorldContext->PIEPrefix, TEXT(""));
+	}
+	
+	if (CurrentMapName == MainMenuMap || CurrentMapName == FString(TEXT("None")))
+	{
+		GotoState(CaterGameInstanceState::MainMenu);
+	}
+	else
+	{
+		GotoState(CaterGameInstanceState::Playing);
+	}
 
 	return Super::StartPlayInEditorGameInstance(LocalPlayer, Params);
 }
@@ -505,8 +505,8 @@ void UCaterGameInstance::BeginPlayingState()
 
 	//create in game menu
 	ULocalPlayer* const Player = GetFirstGamePlayer();
-	// UIManager->CreateInGameMenu(this, Player);
 
+	
 	// // Make sure viewport has focus
 	// FSlateApplication::Get().SetAllUserFocusToGameViewport();
 }

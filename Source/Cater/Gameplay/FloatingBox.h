@@ -34,31 +34,34 @@ protected:
 	int Health;
 
 	UPROPERTY(Replicated, EditAnywhere, Category = "Floating Box")
-	FVector FixedLocation;
+	FTransform FixedTransfrom;
 
-	UPROPERTY(Replicated, EditAnywhere, Category = "Floating Box")
+	UPROPERTY(EditAnywhere, Category = "Floating Box")
 	bool bActivated;
 
-	UPROPERTY(Replicated, EditAnywhere, Category = "Floating Box")
+	UPROPERTY(EditAnywhere, Category = "Floating Box")
 	bool bActivatedInit = false;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(Replicated, EditAnywhere, Category = "Floating Box")
 	bool bIsMovable;
-	UPROPERTY(Replicated, EditAnywhere, Category = "Floating Box")
 	bool bActivating;
-	UPROPERTY(Replicated, EditAnywhere, Category = "Floating Box")
 	bool bDeactivating;
-	UPROPERTY(Replicated, EditAnywhere, Category = "Floating Box")
 	float DeactivationAccel;
+
+
+	void DeactivatedInit();
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Floating Box")
 	void SetBoxMovable(bool movable);
 
+	void LocalSetBoxMovable(bool movable);
+
 	UFUNCTION(BlueprintCallable, Category = "Floating Box")
 	void SetActivated(bool activated);
+	// UFUNCTION(NetMulticast, Unreliable)
+	// void ClientSetActivated(bool activated);
 
 	void OnActivatingEnd();
 	void OnDeactivatingEnd();

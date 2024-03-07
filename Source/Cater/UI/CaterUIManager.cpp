@@ -7,15 +7,18 @@
 #include "OnlineSubsystem.h"
 #include "Blueprint/UserWidget.h"
 #include "CaterGameInstance.h"
+#include "CaterGameMode.h"
+#include "CaterGameState.h"
 #include "CaterInGameMenuWidget.h"
 #include "EndMatchWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 void UCaterUIManager::CreateMainMenu(ULocalPlayer* Player)
 {
-	MainMenuUI = CreateWidget<UCaterMainMenuWidget>(Player->GetPlayerController(GetWorld()), MainMenuUIClass);
+	MainMenuUI = CreateWidget<UCaterMainMenuWidget>(GI, MainMenuUIClass);
 	if(MainMenuUI == nullptr)
 	{
-		UE_LOG(LogOnline, Error, TEXT("UCaterGameInstance::BeginMainMenuState: MainMenuUI is null") );
+		UE_LOG(LogTemp, Error, TEXT("UCaterUIManager::CreateMainMenu: MainMenuUI is null") );
 		return;
 	}
 	MainMenuUI->Construct(GI, Player);
@@ -24,6 +27,11 @@ void UCaterUIManager::CreateMainMenu(ULocalPlayer* Player)
 
 void UCaterUIManager::DestructMainMenu()
 {
+	if (MainMenuUI == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UCaterUIManager::DestructMainMenu: MainMenuUI is null") );
+		return;
+	}
 	MainMenuUI->RemoveFromViewport();
 	MainMenuUI->Destruct();
 	MainMenuUI = nullptr;
@@ -31,10 +39,10 @@ void UCaterUIManager::DestructMainMenu()
 
 void UCaterUIManager::CreateInGameMenu(ULocalPlayer* Player)
 {
-	InGameMenuUI = CreateWidget<UCaterInGameMenuWidget>(Player->GetPlayerController(GetWorld()), InGameMenuUIClass);
+	InGameMenuUI = CreateWidget<UCaterInGameMenuWidget>(GI, InGameMenuUIClass);
 	if(InGameMenuUI == nullptr)
 	{
-		UE_LOG(LogOnline, Error, TEXT("UCaterGameInstance::BeginMainMenuState: InGameMenuUI is null") );
+		UE_LOG(LogTemp, Error, TEXT("UCaterUIManager::CreateInGameMenu: InGameMenuUI is null") );
 		return;
 	}
 	InGameMenuUI->Construct(GI, Player);
@@ -43,6 +51,11 @@ void UCaterUIManager::CreateInGameMenu(ULocalPlayer* Player)
 
 void UCaterUIManager::DestructInGameMenu()
 {
+	if (InGameMenuUI == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UCaterUIManager::DestructInGameMenu: InGameMenuUI is null") );
+		return;
+	}
 	InGameMenuUI->RemoveFromViewport();
 	InGameMenuUI->Destruct();
 	InGameMenuUI = nullptr;
@@ -50,6 +63,18 @@ void UCaterUIManager::DestructInGameMenu()
 
 void UCaterUIManager::ToggleInGameMenu()
 {
+	if(Cast<ACaterGameState>(UGameplayStatics::GetGameState(GetWorld()))->bIsGameFinished)
+	{
+		if(EndMatchUI == nullptr)
+		{
+			SetUIState(ECaterUIState::EndMatchMenu);
+		}
+		else
+		{
+			SetUIState(ECaterUIState::NoMenu);
+		}
+		return;
+	}
 	if (InGameMenuUI == nullptr)
 	{
 		SetUIState(ECaterUIState::InGameMenu);
@@ -70,10 +95,10 @@ void UCaterUIManager::DestructMessageMenu()
 
 void UCaterUIManager::CreateEndMatchMenu()
 {
-	EndMatchUI = CreateWidget<UEndMatchWidget>(GI->GetFirstGamePlayer()->GetPlayerController(GetWorld()), EndMatchUIClass);
+	EndMatchUI = CreateWidget<UEndMatchWidget>(GI, EndMatchUIClass);
 	if(EndMatchUI == nullptr)
 	{
-		UE_LOG(LogOnline, Error, TEXT("UCaterGameInstance::BeginMainMenuState: EndMatchUI is null") );
+		UE_LOG(LogTemp, Error, TEXT("UCaterUIManager::CreateEndMatchMenu: EndMatchUI is null") );
 		return;
 	}
 	EndMatchUI->Construct(GI);
@@ -82,6 +107,11 @@ void UCaterUIManager::CreateEndMatchMenu()
 
 void UCaterUIManager::DestructEndMatchMenu()
 {
+	if (EndMatchUI == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UCaterUIManager::DestructEndMatchMenu: EndMatchUI is null") );
+		return;
+	}
 	EndMatchUI->RemoveFromViewport();
 	EndMatchUI->Destruct();
 	EndMatchUI = nullptr;
@@ -96,7 +126,7 @@ void UCaterUIManager::EndCurrentUIState()
 {
 	if (!IsValid(GI))
 	{
-		UE_LOG(LogOnline, Error, TEXT("UCaterUIManager::EndCurrentUIState: GI is null"));
+		UE_LOG(LogTemp, Error, TEXT("UCaterUIManager::EndCurrentUIState: GI is null"));
 		return;
 	}
 	switch (CurrentUIState)

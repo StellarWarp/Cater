@@ -7,10 +7,25 @@
 #include "CaterUIManager.h"
 #include "Net/UnrealNetwork.h"
 
+void ACaterGameState::BeginPlay()
+{
+	Super::BeginPlay();
+	const auto UI = Cast<UCaterGameInstance>(GetGameInstance())->GetUIManager();
+	if (!UI)
+	{
+		//log error and ret
+		UE_LOG(LogOnline, Error, TEXT("ACaterGameState::ClientOnGameFinished: UI is null"));
+		return;
+	}
+	
+	UI->SetUIState(ECaterUIState::NoMenu);
+}
+
 void ACaterGameState::RequestFinishAndExitToMainMenu()
 {
 	bReplicates = true;
 }
+
 
 void ACaterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps ) const
 {
@@ -20,7 +35,7 @@ void ACaterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(ACaterGameState, GameEnding);
 }
 
-void ACaterGameState::ClientOnGameFinished_Implementation()
+void ACaterGameState::OnGameFinished_Implementation()
 {
 	const auto UI = Cast<UCaterGameInstance>(GetGameInstance())->GetUIManager();
 	if (!UI)
@@ -29,6 +44,11 @@ void ACaterGameState::ClientOnGameFinished_Implementation()
 		UE_LOG(LogOnline, Error, TEXT("ACaterGameState::ClientOnGameFinished: UI is null"));
 		return;
 	}
+	//log which device is calling this function
+	UE_LOG(LogOnline, Display, TEXT("ACaterGameState::ClientOnGameFinished: On Player %s"),
+		*GetGameInstance()->GetFirstLocalPlayerController()->GetNetOwningPlayer()->GetName() );
+
+	
 	UI->SetUIState(ECaterUIState::EndMatchMenu);
 	
 

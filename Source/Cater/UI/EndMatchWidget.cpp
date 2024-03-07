@@ -5,6 +5,7 @@
 
 #include "CaterGameInstance.h"
 #include "CaterGameState.h"
+#include "CaterUIManager.h"
 #include "Kismet/GameplayStatics.h"
 
 void UEndMatchWidget::Construct(UCaterGameInstance* GameInstance)
@@ -34,10 +35,33 @@ void UEndMatchWidget::OnExitToMainMenuButtonClicked()
 
 void UEndMatchWidget::OnRematchButtonClicked()
 {
-	
+	//if is play in editor
+	if(GetWorld()->IsPlayInEditor())
+	{
+		// GI->GotoState(CaterGameInstanceState::MainMenu);
+		GI->EndPlayingState();
+		FString const StartURL = FString::Printf(TEXT("/Game/Maps/%s?game=%s%s"),
+										 L"TopDownExampleMap",
+										 GI->GetOnlineMode() != EOnlineMode::Offline
+											 ? TEXT("?listen")
+											 : TEXT(""),
+										 GI->GetOnlineMode() == EOnlineMode::LAN
+											 ? TEXT("?bIsLanMatch")
+											 : TEXT(""));
+		FString const GameType = TEXT("");
+		GI->HostGame(GI->GetFirstGamePlayer(), GameType, StartURL);
+		GI->BeginPlayingState();
+		
+
+	}
+	else
+	{
+		//restart level
+		UGameplayStatics::OpenLevel(GI->GetWorld(), FName(*GI->GetWorld()->GetName()), false);
+	}
 }
 
 void UEndMatchWidget::OnClickContinueButton()
 {
-	
+	GI->GetUIManager()->SetUIState(ECaterUIState::NoMenu);
 }

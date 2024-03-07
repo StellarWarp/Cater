@@ -16,6 +16,10 @@ enum class ECaterGameEnding
 UCLASS()
 class ACaterGameState : public AGameState
 {
+protected:
+	virtual void BeginPlay() override;
+
+private:
 	GENERATED_BODY()
 
 public:
@@ -29,9 +33,11 @@ public:
 	ECaterGameEnding GameEnding;
 
 	void RequestFinishAndExitToMainMenu();
+	
+	UFUNCTION(Reliable, NetMulticast, Category = "CaterGameState")
+	void OnGameFinished();
 
-	UFUNCTION(Reliable, Client, Category = "CaterGameState")
-	void ClientOnGameFinished();
+	
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&) const override;
 };
