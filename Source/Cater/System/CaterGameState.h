@@ -9,6 +9,7 @@
 UENUM()
 enum class ECaterGameEnding
 {
+	None,
 	PlayerFallen,
 	PlayerFinished
 };
